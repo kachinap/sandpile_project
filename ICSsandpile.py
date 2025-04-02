@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 N = 200          # gridsize
 K = 3            # slope at critical point
-num_iterations = 100000  # number of grains to add
+num_iterations = 5000  # number of grains to add
 
 def initialize_grid():
     # stable grid (all cells at 0)
@@ -25,6 +25,10 @@ def topple(grid):
                 gridchanges[i, j-1] += 1
                 topple_count += 1
     grid += gridchanges
+    grid[:, 0] = 0
+    grid[:, -1] = 0
+    grid[0, :] = 0
+    grid[-1, :] = 0
     return topple_count # number of topplings that occurred
 
 def run_avalanche(grid):
