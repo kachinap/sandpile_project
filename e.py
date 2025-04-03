@@ -8,6 +8,9 @@ K = 3            # slope at critical point
 V = 7            # initial slope of interior cells 
 num_avalanches = 1000  # number of avalanches to simulate
 
+# for reproducibility of random grain placement:
+np.random.seed(42)
+
 def initialize_grid():
     grid = np.zeros((N, N), dtype=int)
     grid[1:-1, 1:-1] = V
@@ -59,15 +62,13 @@ def add_grain_run_avalanche(grid):
 
 def simulate_avalanches(num_avalanches):
     # Initialize and reach critical state
-    initial_grid = initialize_grid()
-    critical_state = run_to_equilibrium(initial_grid)
+    grid = initialize_grid()
+    grid = run_to_equilibrium(grid)
     
     # Simulate avalanches
     avalanche_sizes = []
     for _ in range(num_avalanches):
-        # Always start from the critical state
-        current_grid = critical_state.copy()
-        size, _ = add_grain_run_avalanche(current_grid)
+        size, grid = add_grain_run_avalanche(grid)
         avalanche_sizes.append(size)
     
     return avalanche_sizes

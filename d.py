@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 N = 50           # gridsize
 K = 3            # slope at critical point
 V = 7            # initial slope of interior cells 
+num_examples = 3  # number of separate avalanche examples
+
+# for reproducibility of random positions:
+np.random.seed(42)
 
 def initialize_grid():
     # a grid with boundaries fixed at 0 and interior cells set to 7
@@ -62,41 +66,28 @@ def run_avalanche(grid):
     print(f"Total avalanche iterations: {iteration}")
     return avalanche_size, grid
 
-def add_grain_run_avalanche(grid):
-    # add a grain to a random interior cell
-    i = np.random.randint(1, N-1)
-    j = np.random.randint(1, N-1)
-    print(f"Adding grain at position ({i}, {j})")
-    grid[i, j] += 1
-    return run_avalanche(grid)
-
 # initialize grid and reach equilibrium
 print("Initializing grid...")
 initial_grid = initialize_grid()
 critical_state = run_to_equilibrium(initial_grid)
 
-plt.figure(figsize=(14,7))
+fig, axes = plt.subplots(1, num_examples, figsize=(5 * num_examples, 5))
 
-# example 1
-print("Running example 1...")
-critical_state1 = critical_state.copy()
-avalanche_size1, final_state1 = add_grain_run_avalanche(critical_state1)
-print("Avalanche size for example 1:", avalanche_size1)
+for ex in range(num_examples):
+    current_grid = critical_state.copy()
 
-plt.subplot(1, 2, 1)
-plt.imshow(final_state1, cmap='viridis', interpolation='nearest')
-plt.colorbar(label='Height')
-plt.title(f"Example 1: {avalanche_size1} topplings")
+    i = np.random.randint(1, N-1)
+    j = np.random.randint(1, N-1)
+    print(f"\nExample {ex+1}: Adding grain at ({i}, {j})")
+    current_grid[i, j] += 1
 
-# Example 2
-print("Running example 2...")
-critical_state2 = critical_state.copy()
-avalanche_size2, final_state2 = add_grain_run_avalanche(critical_state2)
-print("Avalanche size for example 2:", avalanche_size2)
+    avalanche_size, final_grid = run_avalanche(current_grid)
+    print(f"Avalanche size for example {ex+1}: {avalanche_size}")
 
-plt.subplot(1, 2, 2)
-plt.imshow(final_state2, cmap='viridis', interpolation='nearest')
-plt.colorbar(label='Height')
-plt.title(f"Example 2: {avalanche_size2} topplings")
+    ax = axes[ex] if num_examples > 1 else axes
+    im = ax.imshow(final_grid, cmap='viridis', interpolation='nearest')
+    ax.set_title(f"Example {ex+1}\nGrain at ({i},{j}), Size={avalanche_size}")
+    plt.colorbar(im, ax=ax)
 
+plt.tight_layout()
 plt.show()
