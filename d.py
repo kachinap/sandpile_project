@@ -1,19 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-N = 50           # gridsize
+N = 200          # gridsize
 K = 3            # slope at critical point
-V = 7            # initial slope of interior cells 
 num_examples = 3  # number of separate avalanche examples
 
 # for reproducibility of random positions:
 np.random.seed(42)
-
-def initialize_grid():
-    # a grid with boundaries fixed at 0 and interior cells set to 7
-    grid = np.zeros((N, N), dtype=int)
-    grid[1:-1, 1:-1] = V
-    return grid
 
 def topple(grid):
     grid = grid.copy()
@@ -67,14 +60,13 @@ def run_avalanche(grid):
     return avalanche_size, grid
 
 # initialize grid and reach equilibrium
-print("Initializing grid...")
-initial_grid = initialize_grid()
-critical_state = run_to_equilibrium(initial_grid)
+print("Loading stable grid from 'stable_starting_state.npy'...")
+stable_state = np.load('stable_starting_state.npy')
 
 fig, axes = plt.subplots(1, num_examples, figsize=(5 * num_examples, 5))
 
 for ex in range(num_examples):
-    current_grid = critical_state.copy()
+    current_grid = stable_state.copy()
 
     i = np.random.randint(1, N-1)
     j = np.random.randint(1, N-1)
