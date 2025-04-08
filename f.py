@@ -76,11 +76,11 @@ def Edges():
 
 def add_grain_run_avalanche(grid):
     #Choose a random place in a 10x10 grid in the middle of the sandpile
-    if function == 1:
+    if function == 1:    #During first simulation add grains randomly
         i,j = Random()
-    if function == 2:
+    if function == 2:    #Second simulation in the middle
         i,j = [100,100]
-    if function == 3:
+    if function == 3:    #Third simulation only near the edges
         i,j = Edges()
     grid[i, j] += 1
     return run_avalanche(grid)
@@ -128,11 +128,11 @@ def plot_avalanche_distribution(avalanche_sizes):
     plt.show()
 
 #Three ways to generate grains: [Randomly, Middle only, Near borders]
-methods = [1,3]
+methods = [1,2,3]
 
 # Main execution
 if __name__ == "__main__":
-    for function,name in zip(methods,['Random','Edges']):
+    for function,name in zip(methods,['Random','Middle','Edges']):
         print(f"Simulating {num_avalanches} grains added at {name}...")
         avalanche_sizes = simulate_avalanches(num_avalanches)
         
