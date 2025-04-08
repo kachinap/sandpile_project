@@ -1,5 +1,8 @@
 import numpy as np
+import time
 import matplotlib.pyplot as plt
+
+start_time = time.time()
 
 # Parameters
 N = 200           # gridsize
@@ -8,8 +11,7 @@ V = 7            # initial slope of interior cells
 num_avalanches = 20000  # number of avalanches to simulate
 
 # for reproducibility of random grain placement:
-np.random.seed(100)
-
+np.random.seed(43)
 
 def initialize_grid():
     grid = np.zeros((N, N), dtype=int)
@@ -55,7 +57,7 @@ def run_avalanche(grid):
     return avalanche_size, grid
 
 def Random():
-    return np.random.randint(1,N-1,size=2)
+    return np.random.randint(1,N-1, size=2)
 
 def Edges():
     borders = {
@@ -74,7 +76,12 @@ def Edges():
 
 def add_grain_run_avalanche(grid):
     #Choose a random place in a 10x10 grid in the middle of the sandpile
-    i,j = function
+    if function == 1:
+        i,j = Random()
+    if function == 2:
+        i,j = [100,100]
+    if function == 3:
+        i,j = Edges()
     grid[i, j] += 1
     return run_avalanche(grid)
 
@@ -86,8 +93,7 @@ def simulate_avalanches(num_avalanches):
     avalanche_sizes = []
     for _ in range(num_avalanches):
         size, grid = add_grain_run_avalanche(grid)
-        avalanche_sizes.append(size)
-    
+        avalanche_sizes.append(size)  
     return avalanche_sizes
 
 def plot_avalanche_distribution(avalanche_sizes):
@@ -102,7 +108,7 @@ def plot_avalanche_distribution(avalanche_sizes):
     # Prepare data for plotting
     sizes = np.array(sorted(size_counts.keys())) # x-asix: sorted sizes (keys in dictionary)
     counts = np.array([size_counts[size] for size in sizes]) # y-axis: counts for each size
-    
+
     # Create log-log plot
     plt.figure(figsize=(10, 6))
     plt.loglog(sizes, counts, 'bo', markersize=5)
@@ -121,9 +127,12 @@ def plot_avalanche_distribution(avalanche_sizes):
     plt.title(f'Avalanche Size Histogram (N={N}, K={K}, {len(avalanche_sizes)} avalanches) ({name})')
     plt.show()
 
+#Three ways to generate grains: [Randomly, Middle only, Near borders]
+methods = [1,3]
+
 # Main execution
 if __name__ == "__main__":
-    for function,name in zip([Random(), [100,100], Edges()],['Random', 'Middle', 'Edges']):
+    for function,name in zip(methods,['Random','Edges']):
         print(f"Simulating {num_avalanches} grains added at {name}...")
         avalanche_sizes = simulate_avalanches(num_avalanches)
         
@@ -135,3 +144,6 @@ if __name__ == "__main__":
         
         # Plot the distribution
         plot_avalanche_distribution(avalanche_sizes)
+    end_time = time.time()
+    run_time = (end_time - start_time)/60
+    print(f'Script ran for {run_time:.2f} min') 
